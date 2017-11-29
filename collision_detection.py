@@ -70,10 +70,10 @@ def main():
         allSprites.draw(screen)
         circleSprite.draw(screen)
         pygame.display.flip()
-  
+        return allSprites,boxes
   
 if __name__=='__main__':
-    main()
+    a,b=main()
   
 """You can also check the collision about the rect attributes. There are many ways to do that.Example:
 1.circle.rect.colliderect(box1) will check the collision between the circle and box1 collision

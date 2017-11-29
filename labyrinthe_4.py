@@ -49,25 +49,16 @@ class Elem(pygame.sprite.Sprite):
                         num_ligne+=1
                 return self.mur,self.arrivee,self.depart,self.couloir
 
-class Mur(Elem):
-        def __init__(self):
-                Elem.__init__(self)
-                self.x=0
-                self.y=0
+class Mur(pygame.sprite.Sprite):
+        def __init__(self,o,liste):
+                pygame.sprite.Sprite.__init__(self)
                 image_mur="images/mur.png"
                 self.image=pygame.image.load(image_mur).convert()
-                self.image_rect=self.image.get_rect()
-                murSprite=list()
+                self.rect=self.image.get_rect()
+                self.rect.x,self.rect.y=liste[o]
                 
-
-        def mursprite(self):
-
-            for i in Elem.mur:
-                
-                self.image_rect.x=i[0]
-                self.image_rect.y=i[1]
-                murSprite.append(i)
-            return murSprite
+                    
+            
                 
 
 
@@ -118,38 +109,35 @@ class Perso(pygame.sprite.Sprite):
         def __init__(self,image):
                 pygame.sprite.Sprite.__init__(self)
                 self.image = pygame.image.load(image).convert_alpha()
-                self.image_rect=self.image.get_rect()
+                self.rect=self.image.get_rect()
                 self.x = 0
                 self.y = 0
-                self.image_rect.x=0
-                self.image_rect.y=0
-
-
+                self.rect.x=0
+                self.rect.y=0
         def deplacer(self,direction):
 
                 if direction=='bas':
                         if self.y<15:
                                 self.y+=1
-                                self.image_rect.y=self.y* 30
+                                self.rect.y=self.y* 30
 
                 if direction=='haut':
                         if self.y>0:
                                 self.y-=1
-                                self.image_rect.y=self.y* 30
+                                self.rect.y=self.y* 30
 
                                 
                 if direction=='droite':
                     if self.x<=15:
                             self.x+=1
-                            self.image_rect.x=self.x* 30
+                            self.rect.x=self.x* 30
 
                             
                 if direction=='gauche':
                         if self.x>0:
                                 self.x-=1
-                                self.image_rect.x=self.x* 30
-
-                return self.image_rect.x,self.image_rect.y
+                                self.rect.x=self.x* 30
+                return self.rect.x,self.rect.y
             
         
 
@@ -165,7 +153,7 @@ text="laby.txt"
 elem=Elem()
 elem.extract_elem(text)
 depart=Depart()
-mur=Mur()
+##mur=Mur()
 arrivee=Arrivee()
 obj=Objets()
 
@@ -173,8 +161,14 @@ img_macgyver="images/macgyver.png"
 macgyver=Perso(img_macgyver)
 
 fond=pygame.image.load(image_fond).convert()
-murGroupSprite=pygame.sprite.Group()
-murGroupSprite.add(mur)
+
+murSprite=list()
+
+for i,o in enumerate(elem.mur):
+        murSprite.append(Mur(i,elem.mur))
+
+
+murGroupSprite=pygame.sprite.Group(murSprite)
 
 
 
@@ -193,13 +187,13 @@ while 1:
             fenetre.blit(depart.image,elmt)
         
 
-        for elmt in elem.mur:
-            fenetre.blit(mur.image,elmt)
+##        for elmt in elem.mur:
+##            fenetre.blit(mur.image,elmt)
 
         for elmt in elem.arrivee:
             fenetre.blit(arrivee.image,elmt)
         
-        fenetre.blit(macgyver.image,(macgyver.image_rect.x,macgyver.image_rect.y))
+        fenetre.blit(macgyver.image,(macgyver.rect.x,macgyver.rect.y))
         pygame.display.flip()
         for event in pygame.event.get():
                 if event.type == KEYDOWN:
@@ -221,8 +215,8 @@ while 1:
             fenetre.blit(depart.image,elmt)
         
 
-        for elmt in elem.mur:
-            fenetre.blit(mur.image,elmt)
+##       for elmt in elem.mur:
+            ##fenetre.blit(mur.image,elmt)
 
         for elmt in elem.arrivee:
             fenetre.blit(arrivee.image,elmt)
@@ -230,5 +224,5 @@ while 1:
         for i,o in enumerate(obj.list_image):
                 fenetre.blit(o,position_obj[i])
                 
-        fenetre.blit(macgyver.image,(macgyver.image_rect.x,macgyver.image_rect.y))
+        fenetre.blit(macgyver.image,(macgyver.rect.x,macgyver.rect.y))
         pygame.display.flip()
