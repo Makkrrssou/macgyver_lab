@@ -106,6 +106,7 @@ class Perso(pygame.sprite.Sprite):
                 self.y = 0
                 self.rect.x=0
                 self.rect.y=0
+                self.rect.width,self.rect.height=30,30
         def deplacer(self,direction):
 
                 if direction=='bas':
@@ -231,9 +232,11 @@ while jouer:
                 if cpt_obj==len(position_objSprite):
                         print('Gagné')
                         jouer=False
+                        
                 else :
                         print('perdu')
                         jouer=False
+                        
                 
            
         fenetre.blit(fond,(0,0))            
@@ -250,3 +253,6 @@ while jouer:
                 
         macgyverSprite.draw(fenetre)
         pygame.display.flip()
+
+
+pygame.quit()
