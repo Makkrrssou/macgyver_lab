@@ -52,12 +52,14 @@ class Wall(pygame.sprite.Sprite):
                 self.image = pygame.image.load(image_wall).convert()
                 self.rect = self.image.get_rect()
                 self.rect.x, self.rect.y = liste[o]
+                
 class Start():
         def __init__(self):
                 self.x = 0
                 self.y = 0
                 image_start = "images/depart.png"
                 self.image = pygame.image.load(image_start).convert()
+                
 class Finish(pygame.sprite.Sprite):
         def __init__(self, o, liste):
                 pygame.sprite.Sprite.__init__(self)
@@ -65,16 +67,19 @@ class Finish(pygame.sprite.Sprite):
                 self.image = pygame.image.load(image_finish).convert()
                 self.rect = self.image.get_rect()
                 self.rect.x, self.rect.y = liste[o]
+                
 class Objects(pygame.sprite.Sprite):
-        def __init__(self, liste):
+        def __init__(self, liste, o):
                 pygame.sprite.Sprite.__init__(self)
                 self.x = 0
                 self.y = 0
                 self.list_image = ["images/objets.png", "images/objets2.png", "images/objets3.png"]
-                for i in self.list_image:
-                        self.image = pygame.image.load(i).convert_alpha()
-                        self.rect = self.image.get_rect()
-                        self.rect.x, self.rect.y = random.choice(liste)
+                self.image = pygame.image.load(self.list_image[o]).convert_alpha()
+                self.rect = self.image.get_rect()
+                self.rect.x, self.rect.y = random.choice(liste)
+                        
+                        
+                        
 class Perso(pygame.sprite.Sprite):
         def __init__(self, image):
                 pygame.sprite.Sprite.__init__(self)
@@ -129,19 +134,23 @@ image_fond = "images/fond.jpg"
 
 text = "laby.txt"
 
-elem = Elem()
-elem.extract_elem(text)
-start = Start()
+
 
 img_macgyver = "images/macgyver.png"
 macgyver = Perso(img_macgyver)
 
 fond = pygame.image.load(image_fond).convert()
-victoire = pygame.image.load("images/image_victoire.png").convert()
-defaite = pygame.image.load("images/perdu.png").convert()
+winning = pygame.image.load("images/image_victoire.png").convert()
+loose = pygame.image.load("images/perdu.png").convert()
+
 wallSprite = list()
 finishSprite = list()
-recupSprite = list()
+position_objSprite = list()
+
+
+elem = Elem()
+elem.extract_elem(text)
+start = Start()
 
 for i, o in enumerate(elem.wall):
         wallSprite.append(Wall(i, elem.wall))
@@ -149,20 +158,19 @@ for i, o in enumerate(elem.wall):
 for i, o in enumerate(elem.finish):
         finishSprite.append(Finish(i, elem.finish))
 
+for i, o in enumerate(Objects(elem.path,i).list_image):
+        position_objSprite.append(Objects(elem.path,i))
+
+
+
 wallGroupSprite = pygame.sprite.Group(wallSprite)
 macgyverSprite = pygame.sprite.Group(macgyver)
 finishGroupSprite = pygame.sprite.Group(finishSprite)
 catchedGroupSprite = pygame.sprite.Group()
+objectsSprite = pygame.sprite.Group(position_objSprite)
 
 
 fenetre.blit(fond, (0, 0))
-position_objSprite = []
-
-for o in Objects(elem.path).list_image:
-        position_objSprite.append(Objects(elem.path))
-
-objectsSprite = pygame.sprite.Group(position_objSprite)
-
 pygame.display.flip()
 
 play = True
@@ -249,11 +257,11 @@ while play:
 
 
 if play is False and len(position_objSprite) == 0:
-        fenetre.blit(victoire, (0, 0))
+        fenetre.blit(winning, (0, 0))
         pygame.display.flip()
         time.sleep(3)
 else:
-        fenetre.blit(defaite, (0, 0))
+        fenetre.blit(loose, (0, 0))
         pygame.display.flip()
         time.sleep(3)
 
