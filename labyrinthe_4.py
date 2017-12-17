@@ -10,9 +10,9 @@ class Elem(pygame.sprite.Sprite):
                 self.y = 0
                 self.lab = list()
                 self.wall = list()
-                self.arrivee = list()
-                self.depart = list()
-                self.couloir = list()
+                self.finish = list()
+                self.start = list()
+                self.path = list()
 
         def extract_elem(self,  fichier):
                 with open(fichier,  "r") as fichier:
@@ -34,38 +34,38 @@ class Elem(pygame.sprite.Sprite):
                             if case == 'm':
                                 self.wall.append((self.x,  self.y))
                             elif case == 'a':
-                                self.arrivee.append((self.x,  self.y))
+                                self.finish.append((self.x,  self.y))
                             elif case == 'd':
-                                 self.depart.append((self.x,  self.y))
+                                 self.start.append((self.x,  self.y))
 
                             elif case == '0':
-                                 self.couloir.append((self.x,  self.y))
+                                 self.path.append((self.x,  self.y))
 
                             num_case += 1
                         num_ligne += 1
-                return self.wall, self.arrivee, self.depart, self.couloir
+                return self.wall, self.finish, self.start, self.path
 
-class wall(pygame.sprite.Sprite):
+class Wall(pygame.sprite.Sprite):
         def __init__(self, o, liste):
                 pygame.sprite.Sprite.__init__(self)
                 image_wall = "images/mur.png"
                 self.image = pygame.image.load(image_wall).convert()
                 self.rect = self.image.get_rect()
                 self.rect.x, self.rect.y = liste[o]
-class Depart():
+class Start():
         def __init__(self):
                 self.x = 0
                 self.y = 0
-                image_depart = "images/depart.png"
-                self.image = pygame.image.load(image_depart).convert()
-class Arrivee(pygame.sprite.Sprite):
+                image_start = "images/depart.png"
+                self.image = pygame.image.load(image_start).convert()
+class Finish(pygame.sprite.Sprite):
         def __init__(self, o, liste):
                 pygame.sprite.Sprite.__init__(self)
-                image_arrivee = "images/arrivee.png"
-                self.image = pygame.image.load(image_arrivee).convert()
+                image_finish = "images/arrivee.png"
+                self.image = pygame.image.load(image_finish).convert()
                 self.rect = self.image.get_rect()
                 self.rect.x, self.rect.y = liste[o]
-class Objets(pygame.sprite.Sprite):
+class Objects(pygame.sprite.Sprite):
         def __init__(self, liste):
                 pygame.sprite.Sprite.__init__(self)
                 self.x = 0
@@ -131,7 +131,7 @@ text = "laby.txt"
 
 elem = Elem()
 elem.extract_elem(text)
-depart = Depart()
+start = Start()
 
 img_macgyver = "images/macgyver.png"
 macgyver = Perso(img_macgyver)
@@ -140,46 +140,46 @@ fond = pygame.image.load(image_fond).convert()
 victoire = pygame.image.load("images/image_victoire.png").convert()
 defaite = pygame.image.load("images/perdu.png").convert()
 wallSprite = list()
-arriveeSprite = list()
+finishSprite = list()
 recupSprite = list()
 
 for i, o in enumerate(elem.wall):
-        wallSprite.append(wall(i, elem.wall))
+        wallSprite.append(Wall(i, elem.wall))
 
-for i, o in enumerate(elem.arrivee):
-        arriveeSprite.append(Arrivee(i, elem.arrivee))
+for i, o in enumerate(elem.finish):
+        finishSprite.append(Finish(i, elem.finish))
 
 wallGroupSprite = pygame.sprite.Group(wallSprite)
 macgyverSprite = pygame.sprite.Group(macgyver)
-arriveeGroupSprite = pygame.sprite.Group(arriveeSprite)
-recupGroupSprite = pygame.sprite.Group()
+finishGroupSprite = pygame.sprite.Group(finishSprite)
+catchedGroupSprite = pygame.sprite.Group()
 
 
 fenetre.blit(fond, (0, 0))
 position_objSprite = []
 
-for o in Objets(elem.couloir).list_image:
-        position_objSprite.append(Objets(elem.couloir))
+for o in Objects(elem.path).list_image:
+        position_objSprite.append(Objects(elem.path))
 
-objetsSprite = pygame.sprite.Group(position_objSprite)
+objectsSprite = pygame.sprite.Group(position_objSprite)
 
 pygame.display.flip()
 
-jouer = True
-while jouer:
+play = True
+while play:
         
-        for elmt in elem.depart:
-            fenetre.blit(depart.image, elmt)
+        for elmt in elem.start:
+            fenetre.blit(start.image, elmt)
 
         wallGroupSprite.draw(fenetre)
 
-        arriveeGroupSprite.draw(fenetre)
+        finishGroupSprite.draw(fenetre)
 
-        objetsSprite.draw(fenetre)
+        objectsSprite.draw(fenetre)
         
         macgyverSprite.draw(fenetre)
 
-        recupGroupSprite.draw(fenetre)
+        catchedGroupSprite.draw(fenetre)
 
         
         pygame.display.flip()
@@ -197,15 +197,15 @@ while jouer:
                         elif event.key == K_DOWN:
                             macgyver.deplacer('bas')
 
-        if pygame.sprite.spritecollide(macgyver, objetsSprite, True):
+        if pygame.sprite.spritecollide(macgyver, objectsSprite, True):
                 
                 
-                print('Récupération objets')
+                print('Récupération objects')
                 for o in position_objSprite:
-                        if o  not in  objetsSprite.sprites():
+                        if o  not in  objectsSprite.sprites():
                                 o.rect.x, o.rect.y = 0, (len(position_objSprite)+11)*30
                                 print(o.rect.x, o.rect.y)
-                                recupGroupSprite.add(o)
+                                catchedGroupSprite.add(o)
                                 position_objSprite.remove(o)
 
 
@@ -216,45 +216,45 @@ while jouer:
                                   
                                     
 
-        if pygame.sprite.spritecollide(macgyver, arriveeGroupSprite, False):
+        if pygame.sprite.spritecollide(macgyver, finishGroupSprite, False):
                 if len(position_objSprite) == 0:
                         print('Gagné')
-                        jouer = False
+                        play = False
                         
                 else :
                         print('perdu')
-                        jouer = False
+                        play = False
                         
                 
            
         fenetre.blit(fond, (0, 0))            
 
-        for elmt in elem.depart:
-            fenetre.blit(depart.image, elmt)
+        for elmt in elem.start:
+            fenetre.blit(start.image, elmt)
 
         
         wallGroupSprite.draw(fenetre)
 
-        arriveeGroupSprite.draw(fenetre)
+        finishGroupSprite.draw(fenetre)
 
-        objetsSprite.draw(fenetre)
+        objectsSprite.draw(fenetre)
                 
         macgyverSprite.draw(fenetre)
         
         
-        recupGroupSprite.draw(fenetre)
+        catchedGroupSprite.draw(fenetre)
         pygame.display.flip()
         
 
 
 
-if jouer == False and len(position_objSprite) == 0:
+if play is False and len(position_objSprite) == 0:
         fenetre.blit(victoire, (0, 0))
         pygame.display.flip()
-        time.sleep(5)
+        time.sleep(3)
 else:
         fenetre.blit(defaite, (0, 0))
         pygame.display.flip()
-        time.sleep(5)
+        time.sleep(3)
 
 pygame.quit()
