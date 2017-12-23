@@ -28,7 +28,7 @@ class Elem(pygame.sprite.Sprite):
                 for ligne in self.lab:
                         num_case = 0
                         for case in ligne:
-##                        conversion en pixels
+
                             self.x = num_case * 30    
                             self.y = num_ligne * 30
                             if case == 'm':
@@ -76,6 +76,7 @@ class Objects(pygame.sprite.Sprite):
                 self.list_image = ["images/objets.png", "images/objets2.png", "images/objets3.png"]
                 self.image = pygame.image.load(self.list_image[o]).convert_alpha()
                 self.rect = self.image.get_rect()
+                self.rect.width, self.rect.height = 30, 30
                 self.rect.x, self.rect.y = random.choice(liste)
                         
                         
